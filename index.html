@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Satej's Web Dev Assignments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --surface: #13151a;
+      --border: #1e2230;
+      --accent: #e8ff47;
+      --accent2: #47c8ff;
+      --text: #e8eaf0;
+      --muted: #5a5f72;
+      --card-hover: #181b24;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      padding: 72px 0 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 12px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.1s forwards;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .subtitle {
+      margin-top: 16px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.35s forwards;
+    }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      font-size: 13px;
+      font-family: 'DM Mono', monospace;
+      color: var(--accent2);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.45s forwards;
+    }
+    .github-link:hover { border-color: var(--accent2); }
+
+    .stats {
+      display: flex;
+      gap: 40px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+
+    .stat { display: flex; flex-direction: column; gap: 4px; }
+    .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 28px 0 20px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.6s forwards;
+    }
+
+    .filter-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 6px 16px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 16px;
+      padding-bottom: 80px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 24px 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      background: var(--card-hover);
+      border-color: #2a2f42;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .card:hover::after { transform: scaleX(1); }
+
+    .card-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+
+    .card-title { font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+
+    .card-desc {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tag-html  { background: rgba(255,107,53,0.12); color: #ff6b35; }
+    .tag-css   { background: rgba(71,200,255,0.12); color: #47c8ff; }
+    .tag-js    { background: rgba(232,255,71,0.12); color: #e8ff47; }
+    .tag-xml   { background: rgba(180,130,255,0.12); color: #c084fc; }
+    .tag-xslt  { background: rgba(104,212,64,0.12); color: #68d440; }
+
+    .card-arrow {
+      align-self: flex-end;
+      font-size: 20px;
+      color: var(--border);
+      transition: color 0.2s, transform 0.2s;
+      margin-top: auto;
+    }
+    .card:hover .card-arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+    .card.hidden { display: none; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1)  { animation-delay: 0.65s; }
+    .card:nth-child(2)  { animation-delay: 0.70s; }
+    .card:nth-child(3)  { animation-delay: 0.75s; }
+    .card:nth-child(4)  { animation-delay: 0.80s; }
+    .card:nth-child(5)  { animation-delay: 0.85s; }
+    .card:nth-child(6)  { animation-delay: 0.90s; }
+    .card:nth-child(7)  { animation-delay: 0.95s; }
+    .card:nth-child(8)  { animation-delay: 1.00s; }
+    .card:nth-child(9)  { animation-delay: 1.05s; }
+    .card:nth-child(10) { animation-delay: 1.10s; }
+    .card:nth-child(11) { animation-delay: 1.15s; }
+    .card:nth-child(12) { animation-delay: 1.20s; }
+    .card:nth-child(13) { animation-delay: 1.25s; }
+
+    @media (max-width: 600px) {
+      header { padding: 48px 0 32px; }
+      .stats { gap: 20px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge">📁 Web Development Portfolio</div>
+    <h1>Satej's<br/><span>Assignments</span></h1>
+    <p class="subtitle">// satej29 · github.com/satej29/WEB_DEVELOPMENT</p>
+    <a class="github-link" href="https://github.com/satej29/WEB_DEVELOPMENT" target="_blank">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+          .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+          -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+          .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+          .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+          0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      View Repository →
+    </a>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-number">13</span>
+      <span class="stat-label">Assignments</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">✓</span>
+      <span class="stat-label">Hosted Live</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">5</span>
+      <span class="stat-label">Technologies</span>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="html">HTML</button>
+    <button class="filter-btn" data-filter="css">CSS</button>
+    <button class="filter-btn" data-filter="xml">XML</button>
+    <button class="filter-btn" data-filter="xslt">XSLT</button>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <a class="card" href="Assignment1/" data-tags="html">
+      <span class="card-number">01 — Assignment</span>
+      <span class="card-title">Web Technology Basics</span>
+      <span class="card-desc">Introduction to web technologies — how the internet works, browsers, HTTP, and the structure of the web.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment2/" data-tags="html css">
+      <span class="card-number">02 — Assignment</span>
+      <span class="card-title">Static Web Pages</span>
+      <span class="card-desc">Building static web pages with HTML structure and CSS styling for presentation.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+        <span class="tag tag-css">CSS</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment3/" data-tags="html">
+      <span class="card-number">03 — Assignment</span>
+      <span class="card-title">Text Formatting</span>
+      <span class="card-desc">HTML text formatting tags — bold, italic, underline, headings, paragraphs, and inline styles.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment4/" data-tags="html">
+      <span class="card-number">04 — Assignment</span>
+      <span class="card-title">HTML Lists</span>
+      <span class="card-desc">Ordered, unordered, and definition lists — nesting and styling list elements in HTML.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment5/" data-tags="html">
+      <span class="card-number">05 — Assignment</span>
+      <span class="card-title">Images in HTML</span>
+      <span class="card-desc">Embedding images using the img tag, attributes like src, alt, width, height, and image alignment.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment6/" data-tags="html">
+      <span class="card-number">06 — Assignment</span>
+      <span class="card-title">Frames in HTML</span>
+      <span class="card-desc">Using frameset and iframe elements to divide browser windows and embed external content.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment7/" data-tags="html">
+      <span class="card-number">07 — Assignment</span>
+      <span class="card-title">Link Tags</span>
+      <span class="card-desc">Anchor tags, hyperlinks, internal and external links, mailto, and navigation between pages.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment8/" data-tags="html">
+      <span class="card-number">08 — Assignment</span>
+      <span class="card-title">Advanced List Tags</span>
+      <span class="card-desc">Nested lists, custom list styles, description lists, and advanced list formatting techniques.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment9/" data-tags="html">
+      <span class="card-number">09 — Assignment</span>
+      <span class="card-title">HTML Forms</span>
+      <span class="card-desc">Form elements — text inputs, radio buttons, checkboxes, dropdowns, and form submission.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment10/" data-tags="html css">
+      <span class="card-number">10 — Assignment</span>
+      <span class="card-title">Resume Webpage</span>
+      <span class="card-desc">A fully designed personal resume page using HTML and CSS — sections for bio, skills, education, and experience.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+        <span class="tag tag-css">CSS</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment11/" data-tags="xml">
+      <span class="card-number">11 — Assignment</span>
+      <span class="card-title">XML Study</span>
+      <span class="card-desc">Understanding XML syntax, document structure, well-formedness, DTD, and practical XML data modeling.</span>
+      <div class="card-tags">
+        <span class="tag tag-xml">XML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment12/" data-tags="xml xslt">
+      <span class="card-number">12 — Assignment</span>
+      <span class="card-title">XSLT Transformation</span>
+      <span class="card-desc">Transforming XML documents into HTML using XSLT stylesheets, templates, and XPath expressions.</span>
+      <div class="card-tags">
+        <span class="tag tag-xml">XML</span>
+        <span class="tag tag-xslt">XSLT</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="Assignment13/" data-tags="html css xml">
+      <span class="card-number">13 — Assignment</span>
+      <span class="card-title">Student Application</span>
+      <span class="card-desc">A complete student application form or portal combining HTML forms, CSS styling, and XML data handling.</span>
+      <div class="card-tags">
+        <span class="tag tag-html">HTML</span>
+        <span class="tag tag-css">CSS</span>
+        <span class="tag tag-xml">XML</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Built with ♥ by Satej · Hosted on GitHub Pages
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.card').forEach(card => {
+        if (filter === 'all') {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.toggle('hidden', !(card.dataset.tags || '').includes(filter));
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
