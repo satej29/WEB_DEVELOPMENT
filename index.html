@@ -1,483 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Satej's Web Dev Assignments</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --bg: #0b0c10;
-      --surface: #13151a;
-      --border: #1e2230;
-      --accent: #e8ff47;
-      --accent2: #47c8ff;
-      --text: #e8eaf0;
-      --muted: #5a5f72;
-      --card-hover: #181b24;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    header {
-      padding: 72px 0 48px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .badge {
-      display: inline-block;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 4px 12px;
-      border-radius: 2px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fadeUp 0.5s ease 0.1s forwards;
-    }
-
-    h1 {
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.2s forwards;
-    }
-
-    h1 span { color: var(--accent); }
-
-    .subtitle {
-      margin-top: 16px;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.35s forwards;
-    }
-
-    .github-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 24px;
-      font-size: 13px;
-      font-family: 'DM Mono', monospace;
-      color: var(--accent2);
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.45s forwards;
-    }
-    .github-link:hover { border-color: var(--accent2); }
-
-    .stats {
-      display: flex;
-      gap: 40px;
-      padding: 24px 0;
-      border-bottom: 1px solid var(--border);
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.5s forwards;
-    }
-
-    .stat { display: flex; flex-direction: column; gap: 4px; }
-    .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
-    .stat-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 28px 0 20px;
-      opacity: 0;
-      animation: fadeUp 0.5s ease 0.6s forwards;
-    }
-
-    .filter-btn {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      padding: 6px 16px;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .filter-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 16px;
-      padding-bottom: 80px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 28px 24px 22px;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      animation: fadeUp 0.5s ease forwards;
-    }
-
-    .card::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s ease;
-    }
-
-    .card:hover {
-      background: var(--card-hover);
-      border-color: #2a2f42;
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-    }
-    .card:hover::after { transform: scaleX(1); }
-
-    .card-number {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-    }
-
-    .card-title { font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
-
-    .card-desc {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-      flex: 1;
-    }
-
-    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-
-    .tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 2px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .tag-html  { background: rgba(255,107,53,0.12); color: #ff6b35; }
-    .tag-css   { background: rgba(71,200,255,0.12); color: #47c8ff; }
-    .tag-js    { background: rgba(232,255,71,0.12); color: #e8ff47; }
-    .tag-xml   { background: rgba(180,130,255,0.12); color: #c084fc; }
-    .tag-xslt  { background: rgba(104,212,64,0.12); color: #68d440; }
-
-    .card-arrow {
-      align-self: flex-end;
-      font-size: 20px;
-      color: var(--border);
-      transition: color 0.2s, transform 0.2s;
-      margin-top: auto;
-    }
-    .card:hover .card-arrow { color: var(--accent); transform: translate(3px, -3px); }
-
-    .card.hidden { display: none; }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      position: relative;
-      z-index: 1;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .card:nth-child(1)  { animation-delay: 0.65s; }
-    .card:nth-child(2)  { animation-delay: 0.70s; }
-    .card:nth-child(3)  { animation-delay: 0.75s; }
-    .card:nth-child(4)  { animation-delay: 0.80s; }
-    .card:nth-child(5)  { animation-delay: 0.85s; }
-    .card:nth-child(6)  { animation-delay: 0.90s; }
-    .card:nth-child(7)  { animation-delay: 0.95s; }
-    .card:nth-child(8)  { animation-delay: 1.00s; }
-    .card:nth-child(9)  { animation-delay: 1.05s; }
-    .card:nth-child(10) { animation-delay: 1.10s; }
-    .card:nth-child(11) { animation-delay: 1.15s; }
-    .card:nth-child(12) { animation-delay: 1.20s; }
-    .card:nth-child(13) { animation-delay: 1.25s; }
-
-    @media (max-width: 600px) {
-      header { padding: 48px 0 32px; }
-      .stats { gap: 20px; }
-      .grid { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satej's Web Dev Portfolio — SY Sem 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --surface: #13151a;
+    --surface2: #1c1f27;
+    --border: #2a2e3a;
+    --accent: #e8ff47;
+    --accent2: #47c8ff;
+    --accent3: #ff6b47;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --done: #4ade80;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  header {
+    position: relative; z-index: 1;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .header-title { display: flex; flex-direction: column; gap: 8px; }
+  .badge {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+    color: var(--accent); background: rgba(232,255,71,0.08); border: 1px solid rgba(232,255,71,0.2);
+    padding: 4px 12px; border-radius: 2px; width: fit-content; text-transform: uppercase;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  .sub { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  .header-stats { display: flex; gap: 24px; align-items: center; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+  .progress-section {
+    position: relative; z-index: 1; padding: 24px 40px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .progress-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+  .progress-bar-wrap { flex: 1; min-width: 200px; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; animation: progressIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+  @keyframes progressIn { from { width: 0; } to { width: 100%; } }
+  .progress-pct { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); }
+  main { position: relative; z-index: 1; padding: 40px; max-width: 1400px; margin: 0 auto; }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+  .filter-btn {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 8px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; border-radius: 2px; transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 700; }
+  .assignments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); padding: 28px;
+    cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+    animation: cardIn 0.4s ease both;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(232,255,71,0.04) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover { border-color: rgba(232,255,71,0.3); transform: translateY(-2px); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+  .card-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; }
+  .status-dot.done { background: var(--done); box-shadow: 0 0 8px var(--done); }
+  .card-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; line-height: 1.2; }
+  .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); }
+  .card-action { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+  .card-action::after { content: '→'; font-size: 14px; transition: transform 0.2s; }
+  .card:hover .card-action::after { transform: translateX(4px); }
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(11,12,15,0.92); backdrop-filter: blur(8px);
+    z-index: 1000; display: flex; align-items: flex-start; justify-content: center;
+    padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.25s; overflow-y: auto;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 900px;
+    min-height: 80vh; transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
+  .modal-title { font-weight: 800; font-size: 1rem; letter-spacing: -0.01em; }
+  .modal-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.08em; }
+  .modal-close { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); background: transparent; border: 1px solid var(--border); cursor: pointer; padding: 6px 14px; border-radius: 2px; transition: all 0.2s; letter-spacing: 0.08em; text-transform: uppercase; margin-left: auto; }
+  .modal-close:hover { border-color: var(--accent3); color: var(--accent3); }
+  .modal-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .tab-btn { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 20px; background: transparent; border: none; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .modal-content { flex: 1; display: flex; flex-direction: column; }
+  .preview-wrap { flex: 1; min-height: 500px; background: #fff; }
+  .preview-wrap iframe { width: 100%; height: 100%; min-height: 500px; border: none; display: block; }
+  .preview-wrap.hidden { display: none; }
+  .code-wrap { flex: 1; overflow: auto; padding: 24px; display: none; }
+  .code-wrap.visible { display: block; }
+  pre { font-family: 'Space Mono', monospace; font-size: 12px; line-height: 1.7; color: #cdd6f4; white-space: pre-wrap; word-break: break-all; }
+  .hl-tag { color: #89b4fa; } .hl-attr { color: #fab387; } .hl-val { color: #a6e3a1; } .hl-comment { color: #6c7086; font-style: italic; }
+  footer { position: relative; z-index: 1; padding: 32px 40px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-text { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .footer-link { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent2); text-decoration: none; letter-spacing: 0.05em; }
+  .footer-link:hover { text-decoration: underline; }
+  @media (max-width: 600px) { header, main, footer { padding: 24px 20px; } .progress-section { padding: 16px 20px; } h1 { font-size: 1.8rem; } }
+</style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div class="badge">📁 Web Development Portfolio</div>
-    <h1>Satej's<br/><span>Assignments</span></h1>
-    <p class="subtitle">// satej29 · github.com/satej29/WEB_DEVELOPMENT</p>
-    <a class="github-link" href="https://github.com/satej29/WEB_DEVELOPMENT" target="_blank">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
-          .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
-          -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
-          .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
-          .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
-          0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-      </svg>
-      View Repository →
-    </a>
-  </header>
-
-  <div class="stats">
-    <div class="stat">
-      <span class="stat-number">13</span>
-      <span class="stat-label">Assignments</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">✓</span>
-      <span class="stat-label">Hosted Live</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">5</span>
-      <span class="stat-label">Technologies</span>
-    </div>
+<header>
+  <div class="header-title">
+    <div class="badge">D.Y. Patil COET · Web Technology</div>
+    <h1>Satej's<br><span>Assignment</span> Portfolio</h1>
+    <div class="sub">SY B.Tech CSE · Semester III–IV · 2024–25</div>
   </div>
+  <div class="header-stats">
+    <div class="stat"><div class="stat-num">13</div><div class="stat-label">Submitted</div></div>
+    <div class="stat"><div class="stat-num">13</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Progress</div></div>
+  </div>
+</header>
 
+<div class="progress-section">
+  <span class="progress-label">Overall Progress</span>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+  <span class="progress-pct">13 / 13 ✓</span>
+</div>
+
+<main>
   <div class="filter-row">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="html">HTML</button>
-    <button class="filter-btn" data-filter="css">CSS</button>
-    <button class="filter-btn" data-filter="xml">XML</button>
-    <button class="filter-btn" data-filter="xslt">XSLT</button>
+    <button class="filter-btn active" onclick="filterCards('all',this)">All</button>
+    <button class="filter-btn" onclick="filterCards('done',this)">Submitted</button>
+    <button class="filter-btn" onclick="filterCards('pending',this)">Pending</button>
   </div>
+  <div class="assignments-grid" id="grid"></div>
+</main>
 
-  <div class="grid" id="grid">
+<footer>
+  <span class="footer-text">© 2025 Satej · D.Y. Patil COET Kolhapur</span>
+  <a href="https://github.com/satej29/WEB_DEVELOPMENT" class="footer-link" target="_blank">View on GitHub →</a>
+</footer>
 
-    <a class="card" href="Assignment1/" data-tags="html">
-      <span class="card-number">01 — Assignment</span>
-      <span class="card-title">Web Technology Basics</span>
-      <span class="card-desc">Introduction to web technologies — how the internet works, browsers, HTTP, and the structure of the web.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment2/" data-tags="html css">
-      <span class="card-number">02 — Assignment</span>
-      <span class="card-title">Static Web Pages</span>
-      <span class="card-desc">Building static web pages with HTML structure and CSS styling for presentation.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-        <span class="tag tag-css">CSS</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment3/" data-tags="html">
-      <span class="card-number">03 — Assignment</span>
-      <span class="card-title">Text Formatting</span>
-      <span class="card-desc">HTML text formatting tags — bold, italic, underline, headings, paragraphs, and inline styles.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment4/" data-tags="html">
-      <span class="card-number">04 — Assignment</span>
-      <span class="card-title">HTML Lists</span>
-      <span class="card-desc">Ordered, unordered, and definition lists — nesting and styling list elements in HTML.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment5/" data-tags="html">
-      <span class="card-number">05 — Assignment</span>
-      <span class="card-title">Images in HTML</span>
-      <span class="card-desc">Embedding images using the img tag, attributes like src, alt, width, height, and image alignment.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment6/" data-tags="html">
-      <span class="card-number">06 — Assignment</span>
-      <span class="card-title">Frames in HTML</span>
-      <span class="card-desc">Using frameset and iframe elements to divide browser windows and embed external content.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment7/" data-tags="html">
-      <span class="card-number">07 — Assignment</span>
-      <span class="card-title">Link Tags</span>
-      <span class="card-desc">Anchor tags, hyperlinks, internal and external links, mailto, and navigation between pages.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment8/" data-tags="html">
-      <span class="card-number">08 — Assignment</span>
-      <span class="card-title">Advanced List Tags</span>
-      <span class="card-desc">Nested lists, custom list styles, description lists, and advanced list formatting techniques.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment9/" data-tags="html">
-      <span class="card-number">09 — Assignment</span>
-      <span class="card-title">HTML Forms</span>
-      <span class="card-desc">Form elements — text inputs, radio buttons, checkboxes, dropdowns, and form submission.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment10/" data-tags="html css">
-      <span class="card-number">10 — Assignment</span>
-      <span class="card-title">Resume Webpage</span>
-      <span class="card-desc">A fully designed personal resume page using HTML and CSS — sections for bio, skills, education, and experience.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-        <span class="tag tag-css">CSS</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment11/" data-tags="xml">
-      <span class="card-number">11 — Assignment</span>
-      <span class="card-title">XML Study</span>
-      <span class="card-desc">Understanding XML syntax, document structure, well-formedness, DTD, and practical XML data modeling.</span>
-      <div class="card-tags">
-        <span class="tag tag-xml">XML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment12/" data-tags="xml xslt">
-      <span class="card-number">12 — Assignment</span>
-      <span class="card-title">XSLT Transformation</span>
-      <span class="card-desc">Transforming XML documents into HTML using XSLT stylesheets, templates, and XPath expressions.</span>
-      <div class="card-tags">
-        <span class="tag tag-xml">XML</span>
-        <span class="tag tag-xslt">XSLT</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="Assignment13/" data-tags="html css xml">
-      <span class="card-number">13 — Assignment</span>
-      <span class="card-title">Student Application</span>
-      <span class="card-desc">A complete student application form or portal combining HTML forms, CSS styling, and XML data handling.</span>
-      <div class="card-tags">
-        <span class="tag tag-html">HTML</span>
-        <span class="tag tag-css">CSS</span>
-        <span class="tag tag-xml">XML</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-bar">
+      <div><div class="modal-meta" id="modalMeta"></div><div class="modal-title" id="modalTitle"></div></div>
+      <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="tab-btn active" id="tabPreview" onclick="switchTab('preview')">Preview</button>
+      <button class="tab-btn" id="tabCode" onclick="switchTab('code')">Source Code</button>
+    </div>
+    <div class="modal-content">
+      <div class="preview-wrap" id="previewWrap"><iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+      <div class="code-wrap" id="codeWrap"><pre id="codeContent"></pre></div>
+    </div>
   </div>
 </div>
 
-<footer>
-  <div class="container">
-    Built with ♥ by Satej · Hosted on GitHub Pages
-  </div>
-</footer>
-
 <script>
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+const assignments = [
+  { num:"01", title:"Web Technology Basics", desc:"Introduction to web technologies — how the internet works, browsers, HTTP, and page structure.", tags:["HTML","Structure"], status:"done", code:`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Web Technology Basics</title></head>
+<body>
+<h1>Web Technology Basics</h1>
+<h2>What is the Internet?</h2>
+<p>The internet is a global network of computers connected together to share information.</p>
+<h2>What is HTTP?</h2>
+<p>HTTP (HyperText Transfer Protocol) is the foundation of data communication on the Web.</p>
+<h2>What is HTML?</h2>
+<p>HTML stands for HyperText Markup Language. It is the standard language for creating web pages.</p>
+<h2>Web Browsers</h2>
+<p>A web browser is a software application used to access and view websites. Examples: Chrome, Firefox, Edge.</p>
+</body></html>` },
 
-      const filter = btn.dataset.filter;
-      document.querySelectorAll('.card').forEach(card => {
-        if (filter === 'all') {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.toggle('hidden', !(card.dataset.tags || '').includes(filter));
-        }
-      });
-    });
+  { num:"02", title:"Static Web Pages", desc:"Multi-section static website with navigation, home, about, contact sections and a contact form.", tags:["HTML","CSS","Navigation","Forms"], status:"done", code:`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Static Web Page</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:0;}
+  header{background:#1a1a2e;color:white;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav a{color:#e8ff47;text-decoration:none;margin-left:20px;font-size:14px;}
+  section{padding:40px 32px;border-bottom:1px solid #eee;}
+  h2{color:#1a1a2e;}
+  form input,form textarea{display:block;width:100%;max-width:400px;padding:8px;margin:8px 0 16px;border:1px solid #ccc;border-radius:4px;}
+  form button{background:#1a1a2e;color:white;padding:10px 24px;border:none;cursor:pointer;border-radius:4px;}
+  footer{background:#1a1a2e;color:#aaa;text-align:center;padding:16px;font-size:13px;}
+</style></head>
+<body>
+<header><h1 style="font-size:1.2rem">MySite</h1><nav><a href="#home">Home</a><a href="#about">About</a><a href="#contact">Contact</a></nav></header>
+<section id="home"><h2>Welcome</h2><p>This is a static webpage built using HTML and CSS.</p></section>
+<section id="about"><h2>About</h2><p>This assignment demonstrates building a functional multi-section static website.</p></section>
+<section id="contact"><h2>Contact Us</h2>
+  <form><label>Name</label><input type="text" placeholder="Your Name" required>
+  <label>Email</label><input type="email" placeholder="Your Email" required>
+  <label>Message</label><textarea rows="4" placeholder="Your message..."></textarea>
+  <button type="submit">Send Message</button></form>
+</section>
+<footer>© 2025 MySite. All rights reserved.</footer>
+</body></html>` },
+
+  { num:"03", title:"Text Formatting Tags", desc:"Showcase of all HTML text formatting tags — bold, italic, code, headings, sub/superscript, semantic tags.", tags:["HTML","Typography","Semantic"], status:"done", code:`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Text Formatting</title>
+<style>body{font-family:Georgia,serif;padding:30px;line-height:1.8;}h1{color:#1a1a2e;border-bottom:2px solid #e8ff47;padding-bottom:8px;}h2{color:#333;margin-top:24px;}</style>
+</head>
+<body>
+<h1>HTML Text Formatting Tags</h1>
+<h2>Basic Formatting</h2>
+<p><b>Bold &lt;b&gt;</b> | <strong>Strong &lt;strong&gt;</strong> | <i>Italic &lt;i&gt;</i> | <em>Emphasis &lt;em&gt;</em></p>
+<p><u>Underline &lt;u&gt;</u> | <mark>Highlight &lt;mark&gt;</mark> | <small>Small &lt;small&gt;</small></p>
+<p><del>Deleted &lt;del&gt;</del> | <ins>Inserted &lt;ins&gt;</ins> | <s>Strikethrough &lt;s&gt;</s></p>
+<h2>Headings</h2>
+<h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>
+<h2>Sub &amp; Superscript</h2>
+<p>H<sub>2</sub>O &nbsp; x<sup>2</sup> + y<sup>2</sup> = z<sup>2</sup></p>
+<h2>Code &amp; Technical</h2>
+<p><code>console.log("Hello");</code> | Press <kbd>Ctrl+S</kbd> | Output: <samp>Hello</samp> | Var: <var>x</var> = 10</p>
+<h2>Blockquote</h2>
+<blockquote style="border-left:4px solid #e8ff47;padding-left:16px;color:#555;">"The best way to learn is by doing." — Anonymous</blockquote>
+<h2>Preformatted</h2>
+<pre style="background:#f4f4f4;padding:12px;">  function hello() {
+    return "Hello, World!";
+  }</pre>
+</body></html>` },
+
+  { num:"04", title:"HTML Lists", desc:"Ordered, unordered, nested and definition lists with type attributes and styling.", tags:["HTML","Lists","ol/ul/dl"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>HTML Lists</title>
+<style>body{font-family:Arial;padding:30px;}h1{color:#1a1a2e;}h2{color:#555;margin-top:24px;}dl{background:#f9f9f9;padding:16px;border-left:4px solid #e8ff47;}dt{font-weight:bold;color:#1a1a2e;margin-top:8px;}dd{margin-left:20px;color:#555;}</style>
+</head><body>
+<h1>HTML Lists</h1>
+<h2>Unordered List</h2>
+<ul><li>Apple</li><li>Banana</li><li>Mango</li><li>Orange</li></ul>
+<h2>Ordered List (Roman Numerals)</h2>
+<ol type="I"><li>Wake Up</li><li>Exercise</li><li>Breakfast</li><li>Study</li><li>Sleep</li></ol>
+<h2>Nested List</h2>
+<ul type="square">
+  <li>Science<ol type="A"><li>Web Technology</li><li>Data Structures</li><li>DBMS</li></ol></li>
+  <li>Commerce<ol type="i"><li>Accounting</li><li>Economics</li></ol></li>
+  <li>Arts<ol type="a"><li>History</li><li>Geography</li></ol></li>
+</ul>
+<h2>Definition List</h2>
+<dl>
+  <dt>HTML</dt><dd>HyperText Markup Language</dd>
+  <dt>CSS</dt><dd>Cascading Style Sheets</dd>
+  <dt>JavaScript</dt><dd>Adds interactivity to web pages</dd>
+  <dt>HTTP</dt><dd>HyperText Transfer Protocol</dd>
+</dl>
+</body></html>` },
+
+  { num:"05", title:"Images in HTML", desc:"Embedding images with img tags, src, alt, width, height attributes and alignment techniques.", tags:["HTML","Images","img"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Images in HTML</title>
+<style>body{font-family:Arial;padding:30px;}h1{color:#1a1a2e;}h2{color:#555;margin:24px 0 12px;}.row{display:flex;gap:16px;flex-wrap:wrap;}figcaption{font-size:12px;color:#888;margin-top:4px;}</style>
+</head><body>
+<h1>Images in HTML</h1>
+<h2>Basic Image</h2>
+<img src="https://picsum.photos/320/180?random=10" alt="Landscape" width="320" height="180">
+<h2>Multiple Images with Captions</h2>
+<div class="row">
+  <figure><img src="https://picsum.photos/200/150?random=11" alt="Sample 1" width="200"><figcaption>Image 1</figcaption></figure>
+  <figure><img src="https://picsum.photos/200/150?random=12" alt="Sample 2" width="200"><figcaption>Image 2</figcaption></figure>
+  <figure><img src="https://picsum.photos/200/150?random=13" alt="Sample 3" width="200"><figcaption>Image 3</figcaption></figure>
+</div>
+<h2>Image with Border</h2>
+<img src="https://picsum.photos/280/160?random=14" alt="Bordered" style="border:3px solid #1a1a2e;border-radius:8px;">
+<h2>Image as Link</h2>
+<a href="https://www.google.com" target="_blank">
+  <img src="https://picsum.photos/220/80?random=15" alt="Click for Google" style="border:2px solid #e8ff47;">
+</a>
+<h2>Responsive Image</h2>
+<img src="https://picsum.photos/800/200?random=16" alt="Responsive" style="max-width:100%;height:auto;">
+</body></html>` },
+
+  { num:"06", title:"Frames & iframes", desc:"Using iframe elements to embed external content, YouTube videos and Google Maps.", tags:["HTML","iframe","Embed"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Frames in HTML</title>
+<style>body{font-family:Arial;padding:30px;}h1{color:#1a1a2e;}h2{color:#555;margin:24px 0 10px;}iframe{display:block;border:2px solid #1a1a2e;border-radius:4px;}.note{font-size:12px;color:#888;margin-top:6px;}</style>
+</head><body>
+<h1>Frames and iframes</h1>
+<h2>Embed a Website</h2>
+<iframe src="https://en.wikipedia.org/wiki/HTML" width="700" height="280" title="Wikipedia"></iframe>
+<p class="note">Wikipedia embedded via iframe.</p>
+<h2>YouTube Video</h2>
+<iframe width="560" height="300" src="https://www.youtube.com/embed/UB1O30fR-EE" title="HTML Tutorial" frameborder="0" allowfullscreen></iframe>
+<p class="note">YouTube video embedded using iframe.</p>
+<h2>Google Maps — Kolhapur</h2>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d121058.92836923243!2d74.01325349!3d16.70498585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc1000f6f5e5f91%3A0xa7c1f41a85451e06!2sKolhapur%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1" width="600" height="240" style="border:0;" allowfullscreen loading="lazy"></iframe>
+</body></html>` },
+
+  { num:"07", title:"Link Tags", desc:"Anchor tags for external, internal, email, phone and download links with target attributes.", tags:["HTML","Anchor","href"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Link Tags</title>
+<style>body{font-family:Arial;padding:30px;}h1{color:#1a1a2e;}h2{color:#555;margin:24px 0 10px;}.box{background:#f9f9f9;padding:16px;border-left:4px solid #e8ff47;margin-bottom:16px;}.box a{display:block;padding:4px 0;color:#1a1a2e;}.back{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:white;padding:8px 14px;text-decoration:none;border-radius:4px;font-size:13px;}</style>
+</head><body>
+<h1 id="top">HTML Link Tags</h1>
+<h2>External Links</h2>
+<div class="box">
+  <a href="https://www.google.com" target="_blank">Open Google (new tab) ↗</a>
+  <a href="https://www.github.com" target="_blank">Open GitHub (new tab) ↗</a>
+  <a href="https://developer.mozilla.org" target="_self">MDN Docs (same tab)</a>
+</div>
+<h2>Internal Navigation</h2>
+<div class="box">
+  <a href="#email">→ Jump to Email Links</a>
+  <a href="#download">→ Jump to Download</a>
+</div>
+<h2 id="email">Email &amp; Phone Links</h2>
+<div class="box">
+  <a href="mailto:satej@example.com">📧 Send Email</a>
+  <a href="tel:+919876543210">📱 Call +91 98765 43210</a>
+</div>
+<h2 id="download">Download Link</h2>
+<div class="box"><a href="#" download>⬇ Download File</a></div>
+<a class="back" href="#top">↑ Top</a>
+</body></html>` },
+
+  { num:"08", title:"Advanced List Tags", desc:"Nested lists, custom styled bullets, definition lists and deep list nesting techniques.", tags:["HTML","Lists","dl/dt/dd"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Advanced Lists</title>
+<style>
+body{font-family:Arial;padding:30px;}h1{color:#1a1a2e;}h2{color:#555;margin:28px 0 12px;}
+ul.custom{list-style:none;padding:0;}
+ul.custom li{padding:6px 0 6px 24px;position:relative;border-bottom:1px solid #eee;}
+ul.custom li::before{content:"▶";color:#e8ff47;position:absolute;left:0;font-size:10px;top:9px;}
+dl.styled{background:#f4f4f4;padding:20px;border-radius:4px;}
+dl.styled dt{font-weight:bold;color:#1a1a2e;margin-top:12px;}
+dl.styled dd{margin-left:20px;color:#555;font-size:14px;line-height:1.6;}
+</style></head><body>
+<h1>Advanced HTML Lists</h1>
+<h2>Custom Styled List</h2>
+<ul class="custom">
+  <li>HTML5 — Semantic Elements</li>
+  <li>CSS3 — Flexbox &amp; Grid</li>
+  <li>JavaScript — DOM Manipulation</li>
+  <li>XML — Data Storage &amp; Transfer</li>
+  <li>XSLT — XML Transformation</li>
+</ul>
+<h2>Definition List — Programming Concepts</h2>
+<dl class="styled">
+  <dt>Variable</dt><dd>A named storage location that holds a value which can change during execution.</dd>
+  <dt>Function</dt><dd>A reusable block of code that performs a specific task.</dd>
+  <dt>Loop</dt><dd>A control structure that repeats a block of code until a condition is met.</dd>
+  <dt>Array</dt><dd>A data structure that stores multiple values in a single variable.</dd>
+</dl>
+<h2>Deep Nested List</h2>
+<ol>
+  <li>Frontend<ul><li>HTML<ol type="a"><li>Semantic tags</li><li>Forms</li></ol></li><li>CSS<ol type="a"><li>Selectors</li><li>Flexbox</li></ol></li></ul></li>
+  <li>Data<ul><li>XML</li><li>JSON</li></ul></li>
+  <li>Backend<ul><li>PHP</li><li>Node.js</li></ul></li>
+</ol>
+</body></html>` },
+
+  { num:"09", title:"HTML Forms", desc:"Employee registration form with all input types — text, email, radio, checkbox, select and textarea.", tags:["HTML","Forms","Input","Validation"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Employee Registration</title>
+<style>
+*{box-sizing:border-box;}body{font-family:Arial;background:#f0f2f5;margin:0;padding:40px 20px;}
+.wrap{background:white;max-width:540px;margin:0 auto;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,0.1);border-radius:8px;}
+h2{color:#1a1a2e;margin-bottom:4px;}.sub{font-size:13px;color:#888;margin-bottom:24px;}
+label{display:block;font-size:13px;font-weight:bold;color:#333;margin-bottom:4px;margin-top:16px;}
+input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{width:100%;padding:9px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;}
+.radio-group,.check-group{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
+.radio-group label,.check-group label{font-weight:normal;display:flex;align-items:center;gap:6px;margin-top:0;}
+.btns{display:flex;gap:12px;margin-top:24px;}
+button{padding:10px 28px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:bold;}
+.sub-btn{background:#1a1a2e;color:white;}.rst-btn{background:#eee;color:#555;}
+hr{border:none;border-top:1px solid #eee;margin:20px 0;}
+</style></head><body>
+<div class="wrap">
+  <h2>Employee Registration</h2>
+  <p class="sub">Fill in the details to register a new employee.</p>
+  <form>
+    <label>Full Name *</label><input type="text" placeholder="e.g. Satej Patil" required>
+    <label>Employee ID *</label><input type="text" placeholder="EMP-2025-001" required>
+    <label>Email Address *</label><input type="email" placeholder="employee@company.com" required>
+    <label>Phone Number</label><input type="tel" placeholder="+91 XXXXX XXXXX">
+    <label>Date of Joining</label><input type="date">
+    <hr>
+    <label>Department *</label>
+    <select required><option value="">-- Select --</option><option>Computer Science</option><option>Electronics</option><option>Mechanical</option><option>Civil</option></select>
+    <label>Gender</label>
+    <div class="radio-group">
+      <label><input type="radio" name="gender" value="m"> Male</label>
+      <label><input type="radio" name="gender" value="f"> Female</label>
+      <label><input type="radio" name="gender" value="o"> Other</label>
+    </div>
+    <label>Skills</label>
+    <div class="check-group">
+      <label><input type="checkbox"> HTML/CSS</label>
+      <label><input type="checkbox"> JavaScript</label>
+      <label><input type="checkbox"> Python</label>
+      <label><input type="checkbox"> SQL</label>
+    </div>
+    <label>Address</label><textarea rows="3" placeholder="Full address..."></textarea>
+    <div class="btns">
+      <button type="submit" class="sub-btn">Register</button>
+      <button type="reset" class="rst-btn">Reset</button>
+    </div>
+  </form>
+</div></body></html>` },
+
+  { num:"10", title:"Resume Webpage", desc:"A fully styled personal resume webpage with bio, education, skills, projects and achievements.", tags:["HTML","CSS","Layout","Resume"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Resume — Satej</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;background:#f0ede8;color:#222;padding:40px 20px;}
+.resume{background:white;max-width:780px;margin:0 auto;box-shadow:0 4px 24px rgba(0,0,0,0.12);}
+.top{background:#1a1a2e;color:white;padding:40px 48px;}
+.top h1{font-size:2.4rem;letter-spacing:-0.02em;}
+.role{color:#e8ff47;font-size:1rem;margin-top:6px;font-family:monospace;}
+.contacts{display:flex;gap:20px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:#aaa;}
+.body{padding:36px 48px;}
+.sec{margin-bottom:28px;}
+.sec h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.2em;color:#1a1a2e;border-bottom:2px solid #e8ff47;padding-bottom:6px;margin-bottom:14px;}
+.item{margin-bottom:14px;}
+.ihead{display:flex;justify-content:space-between;align-items:baseline;}
+.ititle{font-weight:bold;font-size:15px;}
+.idate{font-size:12px;color:#888;font-family:monospace;}
+.isub{font-size:13px;color:#666;margin:2px 0 6px;}
+.idesc{font-size:13px;color:#444;line-height:1.6;}
+.skills{display:flex;flex-wrap:wrap;gap:8px;}
+.skill{background:#f0f0f0;border:1px solid #ddd;padding:4px 14px;font-size:12px;font-family:monospace;border-radius:2px;}
+.skill.hi{background:rgba(232,255,71,.2);border-color:#c8d800;}
+</style></head><body>
+<div class="resume">
+  <div class="top">
+    <h1>Satej</h1>
+    <div class="role">// SY B.Tech CSE · D.Y. Patil COET, Kolhapur</div>
+    <div class="contacts">
+      <span>📧 satej@email.com</span><span>📱 +91 98765 43210</span>
+      <span>📍 Kolhapur, MH</span><span>🔗 github.com/satej29</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="sec"><h2>Objective</h2><p class="idesc">Enthusiastic CS student with a strong foundation in web technologies, eager to apply and expand my skills.</p></div>
+    <div class="sec"><h2>Education</h2>
+      <div class="item"><div class="ihead"><span class="ititle">B.Tech — Computer Science Engineering</span><span class="idate">2023–2027</span></div><div class="isub">D.Y. Patil COET, Kolhapur</div></div>
+      <div class="item"><div class="ihead"><span class="ititle">HSC — Science</span><span class="idate">2023</span></div><div class="isub">Maharashtra State Board · 84%</div></div>
+    </div>
+    <div class="sec"><h2>Skills</h2>
+      <div class="skills">
+        <span class="skill hi">HTML5</span><span class="skill hi">CSS3</span><span class="skill hi">XML/XSLT</span>
+        <span class="skill">JavaScript</span><span class="skill">C Programming</span><span class="skill">Python</span><span class="skill">Git &amp; GitHub</span>
+      </div>
+    </div>
+    <div class="sec"><h2>Projects</h2>
+      <div class="item"><div class="ihead"><span class="ititle">Web Dev Portfolio</span><span class="idate">2025</span></div>
+      <div class="idesc">13 web technology practicals covering HTML, CSS, XML and XSLT. Hosted on GitHub Pages.</div></div>
+    </div>
+    <div class="sec"><h2>Achievements</h2>
+      <div class="idesc">• All 13 web assignments completed<br>• Active in college technical events<br>• Strong academic performance</div>
+    </div>
+    <div class="sec"><h2>Languages</h2><div class="idesc">English · Hindi · Marathi</div></div>
+  </div>
+</div></body></html>` },
+
+  { num:"11", title:"XML Study", desc:"XML document structure, syntax rules, XSD schema definition and well-formedness validation.", tags:["XML","XSD","Schema"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>XML Study</title>
+<style>body{font-family:Arial;padding:30px;background:#0b0c0f;color:#e8eaf0;}h1{color:#e8ff47;border-bottom:1px solid #2a2e3a;padding-bottom:10px;}h2{color:#47c8ff;margin:28px 0 12px;}pre{background:#13151a;border:1px solid #2a2e3a;padding:20px;font-size:13px;line-height:1.7;overflow-x:auto;border-radius:4px;color:#a6e3a1;font-family:'Courier New',monospace;}.note{background:rgba(232,255,71,0.08);border-left:3px solid #e8ff47;padding:12px 16px;margin:16px 0;}ul{padding-left:24px;color:#ccc;line-height:2;}li span{color:#e8ff47;font-weight:bold;}</style>
+</head><body>
+<h1>XML Study — Assignment 11</h1>
+<h2>What is XML?</h2>
+<p>XML (eXtensible Markup Language) stores and transports data using user-defined tags.</p>
+<div class="note">✦ Unlike HTML, XML tags are <strong>user-defined</strong> — you create tags to describe your data.</div>
+<h2>Sample XML Document</h2>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;students&gt;
+  &lt;student rollno="101"&gt;
+    &lt;name&gt;Satej&lt;/name&gt;
+    &lt;branch&gt;Computer Science&lt;/branch&gt;
+    &lt;semester&gt;3&lt;/semester&gt;
+    &lt;marks&gt;
+      &lt;subject name="Web Technology"&gt;91&lt;/subject&gt;
+      &lt;subject name="DBMS"&gt;85&lt;/subject&gt;
+    &lt;/marks&gt;
+  &lt;/student&gt;
+&lt;/students&gt;</pre>
+<h2>XSD Schema</h2>
+<pre>&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;xs:element name="students"&gt;
+    &lt;xs:complexType&gt;
+      &lt;xs:sequence&gt;
+        &lt;xs:element name="student" maxOccurs="unbounded"&gt;
+          &lt;xs:complexType&gt;
+            &lt;xs:sequence&gt;
+              &lt;xs:element name="name" type="xs:string"/&gt;
+              &lt;xs:element name="branch" type="xs:string"/&gt;
+              &lt;xs:element name="semester" type="xs:integer"/&gt;
+            &lt;/xs:sequence&gt;
+            &lt;xs:attribute name="rollno" type="xs:integer" use="required"/&gt;
+          &lt;/xs:complexType&gt;
+        &lt;/xs:element&gt;
+      &lt;/xs:sequence&gt;
+    &lt;/xs:complexType&gt;
+  &lt;/xs:element&gt;
+&lt;/xs:schema&gt;</pre>
+<h2>XML Rules</h2>
+<ul>
+  <li><span>Root element</span> — Must have exactly one root element</li>
+  <li><span>Closing tags</span> — All elements must be properly closed</li>
+  <li><span>Case-sensitive</span> — &lt;Name&gt; ≠ &lt;name&gt;</li>
+  <li><span>Proper nesting</span> — Elements must be correctly nested</li>
+  <li><span>Quoted attributes</span> — Attribute values must be in quotes</li>
+</ul>
+</body></html>` },
+
+  { num:"12", title:"XSLT Transformation", desc:"Transforming XML to HTML output using XSL stylesheets, templates, xsl:for-each and XPath expressions.", tags:["XML","XSLT","XSL","XPath"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>XSLT Transformation</title>
+<style>body{font-family:Arial;padding:30px;background:#0b0c0f;color:#e8eaf0;}h1{color:#e8ff47;border-bottom:1px solid #2a2e3a;padding-bottom:10px;}h2{color:#47c8ff;margin:28px 0 12px;}pre{background:#13151a;border:1px solid #2a2e3a;padding:20px;font-size:13px;line-height:1.7;overflow-x:auto;border-radius:4px;font-family:'Courier New',monospace;color:#89b4fa;}table{width:100%;border-collapse:collapse;margin-top:12px;}th{background:#1a1a2e;color:#e8ff47;padding:12px 16px;text-align:left;}td{padding:10px 16px;border-bottom:1px solid #2a2e3a;font-size:14px;color:#cdd6f4;}tr:nth-child(even) td{background:#13151a;}.arrow{text-align:center;font-size:2rem;color:#e8ff47;margin:16px 0;}</style>
+</head><body>
+<h1>XSLT Transformation — Assignment 12</h1>
+<h2>① Source XML</h2>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;bookstore&gt;
+  &lt;book category="web"&gt;
+    &lt;title&gt;Learning XML&lt;/title&gt;&lt;author&gt;Erik T. Ray&lt;/author&gt;&lt;year&gt;2003&lt;/year&gt;&lt;price&gt;399&lt;/price&gt;
+  &lt;/book&gt;
+  &lt;book category="web"&gt;
+    &lt;title&gt;HTML and CSS&lt;/title&gt;&lt;author&gt;Jon Duckett&lt;/author&gt;&lt;year&gt;2011&lt;/year&gt;&lt;price&gt;599&lt;/price&gt;
+  &lt;/book&gt;
+  &lt;book category="programming"&gt;
+    &lt;title&gt;The Pragmatic Programmer&lt;/title&gt;&lt;author&gt;Andrew Hunt&lt;/author&gt;&lt;year&gt;1999&lt;/year&gt;&lt;price&gt;749&lt;/price&gt;
+  &lt;/book&gt;
+&lt;/bookstore&gt;</pre>
+<h2>② XSL Stylesheet</h2>
+<pre>&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+  &lt;xsl:template match="/"&gt;
+    &lt;table border="1"&gt;
+      &lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;
+      &lt;xsl:for-each select="bookstore/book"&gt;
+        &lt;xsl:sort select="price"/&gt;
+        &lt;tr&gt;
+          &lt;td&gt;&lt;xsl:value-of select="title"/&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;xsl:value-of select="author"/&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;xsl:value-of select="year"/&gt;&lt;/td&gt;
+          &lt;td&gt;₹&lt;xsl:value-of select="price"/&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/xsl:for-each&gt;
+    &lt;/table&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;</pre>
+<div class="arrow">↓ Transformed Output</div>
+<h2>③ HTML Output</h2>
+<table><tr><th>Title</th><th>Author</th><th>Year</th><th>Price</th></tr>
+<tr><td>Learning XML</td><td>Erik T. Ray</td><td>2003</td><td>₹399</td></tr>
+<tr><td>HTML and CSS</td><td>Jon Duckett</td><td>2011</td><td>₹599</td></tr>
+<tr><td>The Pragmatic Programmer</td><td>Andrew Hunt</td><td>1999</td><td>₹749</td></tr>
+</table></body></html>` },
+
+  { num:"13", title:"Student Application (XSLT)", desc:"Student result system using XSLT with xsl:if and xsl:choose conditionals for grade and pass/fail.", tags:["XML","XSLT","xsl:if","xsl:choose"], status:"done", code:`<!DOCTYPE html>
+<html><head><title>Student Application</title>
+<style>body{font-family:Arial;padding:30px;background:#0b0c0f;color:#e8eaf0;}h1{color:#e8ff47;border-bottom:1px solid #2a2e3a;padding-bottom:10px;}h2{color:#47c8ff;margin:28px 0 12px;}pre{background:#13151a;border:1px solid #2a2e3a;padding:20px;font-size:13px;line-height:1.8;overflow-x:auto;border-radius:4px;font-family:'Courier New',monospace;color:#89b4fa;}table{width:100%;border-collapse:collapse;margin-top:12px;}th{background:#1a1a2e;color:#e8ff47;padding:12px 16px;text-align:left;}td{padding:10px 16px;border-bottom:1px solid #2a2e3a;font-size:14px;color:#cdd6f4;}tr:nth-child(even) td{background:#13151a;}.pass{color:#4ade80;font-weight:bold;}.fail{color:#ff6b47;font-weight:bold;}.dist{color:#e8ff47;}.first{color:#47c8ff;}.second{color:#a6e3a1;}</style>
+</head><body>
+<h1>Student Application — XSLT Conditionals</h1>
+<h2>XML Source</h2>
+<pre>&lt;students&gt;
+  &lt;student&gt;&lt;name&gt;Satej&lt;/name&gt;&lt;rollno&gt;101&lt;/rollno&gt;&lt;marks&gt;91&lt;/marks&gt;&lt;/student&gt;
+  &lt;student&gt;&lt;name&gt;Prachi&lt;/name&gt;&lt;rollno&gt;102&lt;/rollno&gt;&lt;marks&gt;88&lt;/marks&gt;&lt;/student&gt;
+  &lt;student&gt;&lt;name&gt;Atharv&lt;/name&gt;&lt;rollno&gt;103&lt;/rollno&gt;&lt;marks&gt;72&lt;/marks&gt;&lt;/student&gt;
+  &lt;student&gt;&lt;name&gt;Riya&lt;/name&gt;&lt;rollno&gt;104&lt;/rollno&gt;&lt;marks&gt;54&lt;/marks&gt;&lt;/student&gt;
+  &lt;student&gt;&lt;name&gt;Rohit&lt;/name&gt;&lt;rollno&gt;105&lt;/rollno&gt;&lt;marks&gt;32&lt;/marks&gt;&lt;/student&gt;
+&lt;/students&gt;</pre>
+<h2>XSLT with xsl:choose &amp; xsl:if</h2>
+<pre>&lt;xsl:for-each select="students/student"&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;xsl:value-of select="name"/&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;xsl:value-of select="marks"/&gt;&lt;/td&gt;
+    &lt;td&gt;
+      &lt;xsl:choose&gt;
+        &lt;xsl:when test="marks &gt;= 75"&gt;Distinction&lt;/xsl:when&gt;
+        &lt;xsl:when test="marks &gt;= 60"&gt;First Class&lt;/xsl:when&gt;
+        &lt;xsl:when test="marks &gt;= 40"&gt;Second Class&lt;/xsl:when&gt;
+        &lt;xsl:otherwise&gt;Fail&lt;/xsl:otherwise&gt;
+      &lt;/xsl:choose&gt;
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;xsl:if test="marks &gt;= 40"&gt;PASS&lt;/xsl:if&gt;
+      &lt;xsl:if test="marks &lt; 40"&gt;FAIL&lt;/xsl:if&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/xsl:for-each&gt;</pre>
+<h2>Transformed Output</h2>
+<table>
+  <tr><th>Name</th><th>Roll No</th><th>Marks</th><th>Grade</th><th>Result</th></tr>
+  <tr><td>Satej</td><td>101</td><td>91</td><td class="dist">Distinction</td><td class="pass">PASS</td></tr>
+  <tr><td>Prachi</td><td>102</td><td>88</td><td class="dist">Distinction</td><td class="pass">PASS</td></tr>
+  <tr><td>Atharv</td><td>103</td><td>72</td><td class="first">First Class</td><td class="pass">PASS</td></tr>
+  <tr><td>Riya</td><td>104</td><td>54</td><td class="second">Second Class</td><td class="pass">PASS</td></tr>
+  <tr><td>Rohit</td><td>105</td><td>32</td><td class="fail">—</td><td class="fail">FAIL</td></tr>
+</table>
+</body></html>` }
+];
+
+function renderGrid(filter='all') {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  assignments.forEach((a,i) => {
+    if (filter !== 'all' && a.status !== filter) return;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${0.05 + i * 0.05}s`;
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-num">ASSIGNMENT ${a.num}</div>
+        <div class="status-dot done"></div>
+      </div>
+      <div class="card-title">${a.title}</div>
+      <div class="card-desc">${a.desc}</div>
+      <div class="card-tags">${a.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="card-action">View Assignment</div>`;
+    card.onclick = () => openModal(a);
+    grid.appendChild(card);
   });
+}
+
+function filterCards(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(filter);
+}
+
+function openModal(a) {
+  document.getElementById('modalMeta').textContent = `ASSIGNMENT ${a.num}`;
+  document.getElementById('modalTitle').textContent = a.title;
+  document.getElementById('previewFrame').srcdoc = a.code;
+  document.getElementById('codeContent').innerHTML = hl(a.code);
+  switchTab('preview');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function switchTab(tab) {
+  const p = tab === 'preview';
+  document.getElementById('previewWrap').classList.toggle('hidden', !p);
+  document.getElementById('codeWrap').classList.toggle('visible', !p);
+  document.getElementById('tabPreview').classList.toggle('active', p);
+  document.getElementById('tabCode').classList.toggle('active', !p);
+}
+
+function hl(code) {
+  return code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="hl-comment">$1</span>')
+    .replace(/(&lt;\/?)([\w:]+)/g,'<span class="hl-tag">$1$2</span>')
+    .replace(/\s([\w:-]+)=/g,' <span class="hl-attr">$1</span>=')
+    .replace(/="([^"]*)"/g,'="<span class="hl-val">$1</span>"');
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+renderGrid();
 </script>
 </body>
 </html>
